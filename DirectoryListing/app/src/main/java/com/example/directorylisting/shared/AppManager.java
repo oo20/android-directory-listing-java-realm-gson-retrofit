@@ -29,8 +29,7 @@ public class AppManager extends Object {
     static public AppManager shared = new AppManager();
 
     public WebService webService = null;
-    //public String baseURL = "http://localhost:8080/api/individuals/";
-    public String baseURL = "http://192.168.5.201:8080/api/";
+    public String baseURL = "http://localhost:8080/api/";
 
     public Boolean directoryListingRefreshNeeded = false;
 
