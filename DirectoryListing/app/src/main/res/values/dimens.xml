@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="individual_detail_label_height">50dp</dimen>
+    <dimen name="generic_margin">10dp</dimen>
+    <dimen name="directory_listing_image_padding">10dp</dimen>
+    <dimen name="directory_listing_image_size">175dp</dimen>
+    <dimen name="directory_listing_spinner_size">25dp</dimen>
+    <dimen name="directory_listing_spinner_thickness">8dp</dimen>
+    <dimen name="individual_detail_image_padding">20dp</dimen>
+    <dimen name="individual_detail_image_size">250dp</dimen>
+    <dimen name="generic_label_width">75dp</dimen>
+</resources>
