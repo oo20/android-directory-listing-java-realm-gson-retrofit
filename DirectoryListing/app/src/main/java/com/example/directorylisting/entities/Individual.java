@@ -2,16 +2,20 @@ package com.example.directorylisting.entities;
 
 import android.net.Uri;
 
+import com.example.directorylisting.application.R;
 import com.example.directorylisting.helpers.StringHelper;
+import com.example.directorylisting.shared.AppManager;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Michael Steele on 3/22/17.
+ * Copyright © 2017 Michael Steele. All rights reserved.
  */
 
 public class Individual extends RealmObject {
+
     //@PrimaryKey
     public String id = "";
     public String firstName = "";
@@ -52,7 +56,7 @@ public class Individual extends RealmObject {
 
     public String getPrettyProfilePicture() {
         if (profilePicture.isEmpty()) {
-            return Uri.parse("R.drawable.image").toString();
+            return StringHelper.getResourcePath(R.drawable.missing);
         }
 
         return profilePicture;
@@ -69,4 +73,5 @@ public class Individual extends RealmObject {
         forceSensitive = false;
         return this;
     }
+
 }

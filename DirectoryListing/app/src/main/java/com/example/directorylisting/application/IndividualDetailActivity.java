@@ -7,7 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import com.example.directorylisting.entities.Individual;
 import com.google.gson.Gson;
 
+/**
+ * Created by Michael Steele on 3/22/17.
+ * Copyright © 2017 Michael Steele. All rights reserved.
+ */
+
 public class IndividualDetailActivity extends AppCompatActivity {
+
     Individual individual = null;
 
     @Override
@@ -21,4 +27,5 @@ public class IndividualDetailActivity extends AppCompatActivity {
         IndividualDetailFragment individualDetailFragment = (IndividualDetailFragment) getSupportFragmentManager().findFragmentById(R.id.individual_detail_fragment);
         individualDetailFragment.setIndividual(individual);
     }
+
 }

@@ -8,6 +8,11 @@ import android.view.MenuItem;
 
 import com.example.directorylisting.shared.AppManager;
 
+/**
+ * Created by Michael Steele on 3/22/17.
+ * Copyright © 2017 Michael Steele. All rights reserved.
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     DirectoryListingFragment directoryListingFragment = null;
@@ -15,6 +20,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AppManager.shared.packageName = getApplicationContext().getPackageName();
+
         setContentView(R.layout.activity_main);
 
         directoryListingFragment = (DirectoryListingFragment) getSupportFragmentManager().findFragmentById(R.id.directory_listing_fragment);
@@ -46,4 +54,5 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }

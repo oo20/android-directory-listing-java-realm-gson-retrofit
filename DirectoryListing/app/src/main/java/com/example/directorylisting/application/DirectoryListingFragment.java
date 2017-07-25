@@ -26,14 +26,12 @@ import retrofit2.Response;
 
 /**
  * Created by Michael Steele on 3/13/17.
+ * Copyright © 2017 Michael Steele. All rights reserved.
  */
 
 public class DirectoryListingFragment extends android.support.v4.app.Fragment {
 
     public static final int REQUEST_REFRESH = 1;
-
-    String[] mobileArray = {"Android","IPhone","WindowsMobile","Blackberry",
-            "WebOS","Ubuntu","Windows7","Max OS X"};
 
     View directoryListingFragment = null;
     ListView directoryListingListView = null;
@@ -118,4 +116,5 @@ public class DirectoryListingFragment extends android.support.v4.app.Fragment {
         intent.putExtra("individual", (new Gson()).toJson(temp));
         startActivityForResult(intent, REQUEST_REFRESH);
     }
+
 }

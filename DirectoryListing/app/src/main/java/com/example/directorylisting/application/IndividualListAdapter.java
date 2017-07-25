@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
@@ -25,8 +27,11 @@ import java.util.List;
 
 import com.example.directorylisting.shared.AppManager;
 
+import static android.R.attr.id;
+
 /**
  * Created by Michael Steele on 7/13/17.
+ * Copyright © 2017 Michael Steele. All rights reserved.
  */
 
 public class IndividualListAdapter extends ArrayAdapter<Individual> {
@@ -49,16 +54,19 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
         // TODO: Recyler
         convertView = LayoutInflater.from(getContext()).inflate(R.layout.layout_directory_listing_item, parent, false);
 
-        ImageView imageView = (ImageView) convertView.findViewById(R.id.profile_image);
+        final ImageView imageView = (ImageView) convertView.findViewById(R.id.profile_image);
 
         Glide.with(getContext())
                 .clear(imageView);
 
         if (item.profilePicture.isEmpty()) {
             imageView.setImageResource(R.drawable.missing);
+            imageView.setRotation(0f);
         } else try {
 
-            final ObjectAnimator anim = ObjectAnimator.ofInt(imageView, "ImageLevel", 0, 1500);
+            final ObjectAnimator anim = ObjectAnimator.ofFloat(imageView,
+                    "rotation", 0f, 360f);
+            anim.setDuration(500);
             anim.setRepeatCount(ObjectAnimator.INFINITE);
             anim.start();
 
@@ -73,12 +81,14 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
                         @Override
                         public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                             anim.cancel();
+                            imageView.setRotation(0f);
                             return false;
                         }
 
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             anim.cancel();
+                            imageView.setRotation(0f);
                             return false;
                         }
                     })

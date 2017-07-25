@@ -20,9 +20,11 @@ import retrofit2.http.Path;
 
 /**
  * Created by Michael Steele on 3/22/17.
+ * Copyright © 2017 Michael Steele. All rights reserved.
  */
 
 public interface WebServiceInterface {
+
     @GET("individuals/directory")
     Call<Directory> getIndividuals();
 
@@ -49,5 +51,6 @@ public interface WebServiceInterface {
             @Path("id") String id,
             //@Part("description") RequestBody description,
             @Part MultipartBody.Part tempFile);
+
 }
 

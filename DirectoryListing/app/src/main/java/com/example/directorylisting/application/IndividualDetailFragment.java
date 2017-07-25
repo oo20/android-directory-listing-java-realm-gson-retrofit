@@ -51,10 +51,10 @@ import static com.example.directorylisting.application.R.drawable.missing;
 
 /**
  * Created by Michael Steele on 3/13/17.
+ * Copyright © 2017 Michael Steele. All rights reserved.
  */
 
 public class IndividualDetailFragment extends android.support.v4.app.Fragment {
-
 
     private static final int CAMERA_REQUEST = 2;
 
@@ -80,7 +80,6 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
 
 
     public void setIndividual(Individual temp) {
-
         individual = temp;
 
         final EditText nameEditText = (EditText) getView().findViewById(R.id.name_text);
@@ -96,17 +95,11 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
         int dpImage = (int) this.getContext().getResources().getDimension(R.dimen.directory_listing_image_size);
 
         try {
-            /*Picasso.with(getContext())
-                    .load(individual.profilePicture)
-                    .resize(dpImage, dpImage)
-                    .centerCrop()
-                    .into(imageView);*/
+
             Glide.with(getContext())
                     .load(individual.getPrettyProfilePicture())
                     .apply(RequestOptions.placeholderOf(R.drawable.missing))
                     .apply(RequestOptions.overrideOf(dpImage, dpImage))
-                    //.apply(RequestOptions.skipMemoryCacheOf(individual.forceRefresh))
-                    //.apply(RequestOptions.diskCacheStrategyOf(individual.forceRefresh ? DiskCacheStrategy.NONE : DiskCacheStrategy.AUTOMATIC))
                     .apply(RequestOptions.signatureOf(AppManager.shared.getCacheKey(individual)))
                     .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.AUTOMATIC))
                     .into(imageView);
@@ -119,6 +112,7 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
         Button saveButton = (Button) getView().findViewById(R.id.save_button);
 
         final Callback<Directory> responseCallback = new Callback<Directory>() {
+
             @Override
             public void onResponse(Call<Directory> call, Response<Directory> response) {
                 Log.d(WebService.class.toString(), "Response:" + response.toString());
@@ -205,7 +199,6 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
             }
         });
 
-
         ImageView imageButton = (ImageView) getView().findViewById(R.id.profile_image);
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -224,8 +217,6 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
             }
         });
     }
-
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

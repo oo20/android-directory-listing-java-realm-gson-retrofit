@@ -1,7 +1,13 @@
 package com.example.directorylisting.helpers;
 
+import android.net.Uri;
+
+import com.example.directorylisting.application.R;
+import com.example.directorylisting.shared.AppManager;
+
 /**
  * Created by Michael Steele on 7/19/17.
+ * Copyright © 2017 Michael Steele. All rights reserved.
  */
 
 public class StringHelper {
@@ -24,4 +30,9 @@ public class StringHelper {
 
         return output;
     }
+
+    public static String getResourcePath(int resource) {
+        return Uri.parse("android.resource://" + AppManager.shared.packageName + "/" + resource).toString();
+    }
+
 }

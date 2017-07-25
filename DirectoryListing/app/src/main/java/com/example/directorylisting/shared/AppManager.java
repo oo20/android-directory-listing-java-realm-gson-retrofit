@@ -23,9 +23,11 @@ import com.bumptech.glide.signature.ObjectKey;
 
 /**
  * Created by Michael Steele on 3/22/17.
+ * Copyright © 2017 Michael Steele. All rights reserved.
  */
 
 public class AppManager extends Object {
+
     static public AppManager shared = new AppManager();
 
     public WebService webService = null;
@@ -36,6 +38,8 @@ public class AppManager extends Object {
     public int imageCompressionPercentage = 1;
 
     public ProgressDialog progressDialog = null;
+
+    public static String packageName = null;
 
     public AppManager init() {
         webService = new WebService();

@@ -27,6 +27,7 @@ import retrofit2.http.Part;
 
 /**
  * Created by Michael Steele on 3/22/17.
+ * Copyright © 2017 Michael Steele. All rights reserved.
  */
 
 public class WebService {
@@ -53,7 +54,6 @@ public class WebService {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .callFactory(httpClientBuilder.build())
                 .build().create(WebServiceInterface.class);
-
     }
 
     public Call<Directory> getIndividuals() {
