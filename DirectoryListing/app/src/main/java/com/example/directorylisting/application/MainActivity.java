@@ -8,6 +8,8 @@ import android.view.MenuItem;
 
 import com.example.directorylisting.shared.AppManager;
 
+import io.realm.Realm;
+
 /**
  * Created by Michael Steele on 3/22/17.
  * Copyright © 2017 Michael Steele. All rights reserved.
@@ -20,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Realm.init(getApplicationContext());
+
 
         AppManager.shared.packageName = getApplicationContext().getPackageName();
 

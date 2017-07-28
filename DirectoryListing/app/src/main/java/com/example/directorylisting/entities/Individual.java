@@ -5,7 +5,9 @@ import android.net.Uri;
 import com.example.directorylisting.application.R;
 import com.example.directorylisting.helpers.StringHelper;
 import com.example.directorylisting.shared.AppManager;
+import com.google.gson.Gson;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -16,7 +18,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class Individual extends RealmObject {
 
-    //@PrimaryKey
+    @PrimaryKey
     public String id = "";
     public String firstName = "";
     public String lastName = "";
@@ -31,7 +33,7 @@ public class Individual extends RealmObject {
     }
 
     public void setId(String value) { // Needed for primary key
-        // Do nothing
+        id = value;
     }
 
     public String getPrettyFullName() {
@@ -72,6 +74,11 @@ public class Individual extends RealmObject {
         imageCheck = "";
         forceSensitive = false;
         return this;
+    }
+
+    public Individual safeForRealm() {
+        Realm realm = Realm.getDefaultInstance();
+        return this.isManaged() ? realm.copyFromRealm(this) : this;
     }
 
 }

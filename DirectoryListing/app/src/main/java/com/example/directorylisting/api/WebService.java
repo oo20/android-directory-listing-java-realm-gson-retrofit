@@ -1,18 +1,21 @@
 package com.example.directorylisting.api;
 
-import android.icu.text.DateFormat;
 import android.util.Log;
 
 import com.example.directorylisting.application.BuildConfig;
 import com.example.directorylisting.entities.Directory;
 import com.example.directorylisting.entities.Individual;
 import com.example.directorylisting.shared.AppManager;
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.realm.Realm;
-import io.realm.RealmList;
+import io.realm.RealmModel;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -23,7 +26,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
-import retrofit2.http.Part;
 
 /**
  * Created by Michael Steele on 3/22/17.
@@ -33,6 +35,21 @@ import retrofit2.http.Part;
 public class WebService {
 
     public WebServiceInterface webServiceInterface = null;
+
+    public interface IndividualsInterface {
+        void onResponse(List<Individual> individuals);
+        void onFailure();
+    }
+
+    public interface IndividualInterface {
+        void onResponse(Individual individual);
+        void onFailure();
+    }
+
+    public interface BasicSuccessFailureInterface {
+        void onSuccess();
+        void onFailure();
+    }
 
     public void init() {
 
@@ -56,27 +73,187 @@ public class WebService {
                 .build().create(WebServiceInterface.class);
     }
 
-    public Call<Directory> getIndividuals() {
+    private Call<Directory> getIndividuals() {
         return webServiceInterface.getIndividuals();
     }
 
-    public Call<Directory> createIndividual(Individual individual) {
+    public void getIndividuals(final IndividualsInterface individualsInterface) {
+        clear(Individual.class);
+        fetchIndividuals(individualsInterface);
+    }
+
+    public void fetchIndividuals(final IndividualsInterface individualsInterface) {
+
+        Realm realm = Realm.getDefaultInstance();
+
+        RealmResults<Individual> storedIndividuals = realm.where(Individual.class).findAll();
+
+        if (storedIndividuals.size() > 0) {
+            individualsInterface.onResponse(WebService.convertResultsToList(storedIndividuals));
+            return;
+        }
+
+        webServiceInterface.getIndividuals().enqueue(new Callback<Directory>() {
+            @Override
+            public void onResponse(Call<Directory> call, Response<Directory> response) {
+                Log.d(WebService.class.toString(), "Response:" + response.toString());
+
+                Directory directory = response.body();
+
+                final List<Individual> individuals = new ArrayList<Individual>();
+
+                Realm realm = Realm.getDefaultInstance();
+
+                realm.beginTransaction();
+                for (Individual individual : directory.individuals) {
+                    individuals.add(individual);
+                    realm.insertOrUpdate(individual.safeForRealm());
+                }
+                realm.commitTransaction();
+
+                individualsInterface.onResponse(individuals);
+            }
+
+            @Override
+            public void onFailure(Call<Directory> call, Throwable t) {
+                Log.d(WebService.class.toString(), "Failure");
+
+                individualsInterface.onFailure();
+            }
+        });
+    }
+
+    private Call<Directory> createIndividual(Individual individual) {
+        Realm realm = Realm.getDefaultInstance();
+
         Directory directory = new Directory().clear();
         directory.individuals.add(individual);
         return webServiceInterface.createIndividual("application/json", new Gson().toJson(directory));
     }
 
-    public Call<Directory> modifyIndividual(String id, Individual individual) {
+    public void createIndividual(Individual individual, IndividualInterface individualInterface) {
+        assert(individual.getId().isEmpty() == true); // Want to maintain calling function distinction in the app
+        saveIndividual(individual, individualInterface);
+    }
+
+    private void saveIndividual(final Individual individual, final IndividualInterface individualInterface) {
+
+        Callback<Directory> responseCallback = new Callback<Directory>() {
+            @Override
+            public void onResponse(Call<Directory> call, Response<Directory> response) {
+                Log.d(WebService.class.toString(), "Response:" + response.toString());
+
+                Directory directory = response.body();
+
+                final List<Individual> individuals = new ArrayList<Individual>();
+
+                if (directory.individuals.size() <= 0) {
+                    Log.d(WebService.class.toString(), "Failed to save individual properly.  Individual not returned from server.");
+
+                    individualInterface.onFailure();
+                    return;
+                }
+
+                Realm realm = Realm.getDefaultInstance();
+
+                realm.beginTransaction();
+                for (Individual listedIndividual : directory.individuals) {
+                    individuals.add(listedIndividual);
+                    realm.insertOrUpdate(listedIndividual.safeForRealm());
+                }
+                realm.commitTransaction();
+
+                individualInterface.onResponse((Individual) individuals.get(0).safeForRealm());
+            }
+
+            @Override
+            public void onFailure(Call<Directory> call, Throwable t) {
+                Log.d(WebService.class.toString(), "Failed to save individual.");
+
+                individualInterface.onFailure();
+            }
+        };
+
+        if (individual.getId().isEmpty()) {
+            Log.d(WebService.class.toString(), "Creating Individual");
+
+            AppManager.shared.webService.createIndividual(individual).enqueue(responseCallback);
+        } else {
+            Log.d(WebService.class.toString(), "Modifying Individual: " + individual.id);
+
+            AppManager.shared.webService.modifyIndividual(individual.id, individual).enqueue(responseCallback);
+        }
+
+    }
+
+    private Call<Directory> modifyIndividual(String id, Individual individual) {
         Directory directory = new Directory().clear();
         directory.individuals.add(individual);
         return webServiceInterface.modifyIndividual("application/json", id, new Gson().toJson(directory));
     }
 
-    public Call<Directory> deleteIndividual(String id) {
-        return webServiceInterface.deleteIndividual(id);
+    public void modifyIndividual(String id, Individual individual, IndividualInterface individualInterface) {
+        assert(individual.getId().isEmpty() == false); // Want to maintain calling function distinction in the app
+        saveIndividual(individual, individualInterface);
     }
 
-    public Call<ResponseBody> uploadFile(String id, String fileData) {
-        return webServiceInterface.uploadFile(id, MultipartBody.Part.createFormData("tempFile", fileData));
+    private void deleteIndividual(String id, final BasicSuccessFailureInterface deleteIndividualInterface) {
+        webServiceInterface.deleteIndividual(id).enqueue(new Callback<Directory>() {
+            @Override
+            public void onResponse(Call<Directory> call, Response<Directory> response) {
+                deleteIndividualInterface.onSuccess();
+            }
+
+            @Override
+            public void onFailure(Call<Directory> call, Throwable t) {
+                deleteIndividualInterface.onFailure();
+            }
+        });
     }
+
+    public void uploadFile(String id, String fileData, final BasicSuccessFailureInterface uploadFileInterface) {
+        webServiceInterface.uploadFile(id, MultipartBody.Part.createFormData("tempFile", fileData)).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d(WebService.class.toString(), "Saving photo response:" + response.toString());
+
+                uploadFileInterface.onSuccess();
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d(WebService.class.toString(), "Failed to save photo.");
+
+                uploadFileInterface.onFailure();
+            }
+        });
+    }
+
+
+    public void clear(Class<? extends RealmModel> clazz) {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.beginTransaction();
+        realm.delete(clazz);
+        realm.commitTransaction();
+    }
+
+    public void clearData() {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.beginTransaction();
+        realm.deleteAll();
+        realm.commitTransaction();
+    }
+
+    public static <T extends Individual> List<T> convertResultsToList(RealmResults<T> results) {
+        Realm realm = Realm.getDefaultInstance();
+
+        List<T> list = new ArrayList<T>();
+        for (T result : results) {
+            list.add((T)result.safeForRealm());
+        }
+        return list;
+    }
+
 }

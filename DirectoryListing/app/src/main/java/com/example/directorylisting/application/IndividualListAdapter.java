@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
@@ -27,6 +28,7 @@ import java.util.List;
 
 import com.example.directorylisting.shared.AppManager;
 
+import static android.R.attr.content;
 import static android.R.attr.id;
 
 /**
@@ -35,6 +37,10 @@ import static android.R.attr.id;
  */
 
 public class IndividualListAdapter extends ArrayAdapter<Individual> {
+
+    static class ViewHolder {
+        ImageView imageView;
+    }
 
     List<Individual> items = new ArrayList<Individual>();
 
@@ -51,48 +57,65 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
 
         Individual item = getItem(position);
 
-        // TODO: Recyler
-        convertView = LayoutInflater.from(getContext()).inflate(R.layout.layout_directory_listing_item, parent, false);
+        ViewHolder holder;
 
-        final ImageView imageView = (ImageView) convertView.findViewById(R.id.profile_image);
+        //if (convertView == null) { // TODO: Fix recycler with glide.
 
-        Glide.with(getContext())
-                .clear(imageView);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.layout_directory_listing_item, parent, false);
+
+
+            holder = new ViewHolder();
+
+            holder.imageView = (ImageView) convertView.findViewById(R.id.profile_image);
+
+            convertView.setTag(holder);
+        /*} else {
+            holder = (ViewHolder) convertView.getTag();
+        }*/
+
+
+
+        Glide.with(holder.imageView.getContext())
+                .clear(holder.imageView);
+
+        holder.imageView.setImageDrawable(null);
+
 
         if (item.profilePicture.isEmpty()) {
-            imageView.setImageResource(R.drawable.missing);
-            imageView.setRotation(0f);
+            holder.imageView.setImageResource(R.drawable.missing);
+            holder.imageView.setRotation(0f);
         } else try {
 
-            final ObjectAnimator anim = ObjectAnimator.ofFloat(imageView,
+            final ObjectAnimator anim = ObjectAnimator.ofFloat(holder.imageView,
                     "rotation", 0f, 360f);
             anim.setDuration(500);
             anim.setRepeatCount(ObjectAnimator.INFINITE);
             anim.start();
 
-            Glide.with(getContext())
+            Glide.with(holder.imageView.getContext())
                     .load(item.getPrettyProfilePicture())
                     .apply(RequestOptions.placeholderOf(R.drawable.spinner))
                     .apply(RequestOptions.overrideOf(dpImage, dpImage))
                     .apply(RequestOptions.signatureOf(AppManager.shared.getCacheKey(item)))
                     .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.AUTOMATIC))
+                    .apply(RequestOptions.priorityOf(Priority.HIGH))
                     .apply(RequestOptions.centerCropTransform())
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            anim.cancel();
-                            imageView.setRotation(0f);
+                            anim.end();
+                            //imageView.setRotation(0f);
                             return false;
                         }
 
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            anim.cancel();
-                            imageView.setRotation(0f);
+                            anim.end();
+                            //imageView.setRotation(0f);
                             return false;
                         }
                     })
-                    .into(imageView);
+                    .into(holder.imageView);
 
         } catch (Exception e) {
             Log.d(IndividualListAdapter.class.toString(), "Error: " + e.toString());

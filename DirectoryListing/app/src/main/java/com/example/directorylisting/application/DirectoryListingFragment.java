@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.directorylisting.api.WebService;
+import com.example.directorylisting.api.WebServiceInterface;
 import com.example.directorylisting.entities.Directory;
 import com.example.directorylisting.entities.Individual;
 import com.example.directorylisting.shared.AppManager;
@@ -20,6 +21,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,6 +60,8 @@ public class DirectoryListingFragment extends android.support.v4.app.Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == REQUEST_REFRESH) {
+            AppManager.shared.directoryListingRefreshNeeded = true;
+
             refreshIndividuals();
         }
     }
@@ -67,18 +71,9 @@ public class DirectoryListingFragment extends android.support.v4.app.Fragment {
 
         AppManager.shared.directoryListingRefreshNeeded = false;
 
-        AppManager.shared.webService.getIndividuals().enqueue(new Callback<Directory>() {
+        WebService.IndividualsInterface individualsInterface = new WebService.IndividualsInterface() {
             @Override
-            public void onResponse(Call<Directory> call, Response<Directory> response) {
-                Log.d(WebService.class.toString(), "Response:" + response.toString());
-
-                Directory directory = response.body();
-
-                final List<Individual> individuals = new ArrayList<Individual>();
-
-                for (Individual individual : directory.individuals) {
-                    individuals.add(individual);
-                }
+            public void onResponse(List<Individual> individuals) {
 
                 final IndividualListAdapter updatedAdapter = new IndividualListAdapter(directoryListingFragment.getContext(),
                         R.layout.layout_directory_listing_item, individuals);
@@ -97,13 +92,20 @@ public class DirectoryListingFragment extends android.support.v4.app.Fragment {
                 });
 
                 directoryListingListView.refreshDrawableState();
+
             }
 
             @Override
-            public void onFailure(Call<Directory> call, Throwable t) {
-                Log.d(WebService.class.toString(), "Failure");
+            public void onFailure() {
+
             }
-        });
+        };
+
+        if (forceRefresh) {
+            AppManager.shared.webService.getIndividuals(individualsInterface);
+        } else {
+            AppManager.shared.webService.fetchIndividuals(individualsInterface);
+        }
     }
 
     public void addIndividual() {
@@ -116,5 +118,4 @@ public class DirectoryListingFragment extends android.support.v4.app.Fragment {
         intent.putExtra("individual", (new Gson()).toJson(temp));
         startActivityForResult(intent, REQUEST_REFRESH);
     }
-
 }

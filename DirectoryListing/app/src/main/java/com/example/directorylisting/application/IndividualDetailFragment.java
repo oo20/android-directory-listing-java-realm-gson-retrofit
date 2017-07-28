@@ -111,28 +111,13 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
 
         Button saveButton = (Button) getView().findViewById(R.id.save_button);
 
-        final Callback<Directory> responseCallback = new Callback<Directory>() {
-
+        final WebService.IndividualInterface individualInterface = new WebService.IndividualInterface() {
             @Override
-            public void onResponse(Call<Directory> call, Response<Directory> response) {
-                Log.d(WebService.class.toString(), "Response:" + response.toString());
-
-                Directory directory = response.body();
-
-                final List<Individual> individuals = new ArrayList<Individual>();
-
-                for (Individual individual : directory.individuals) {
-                    individuals.add(individual);
-                }
-
-                individual = individuals.get(0);
-
-
+            public void onResponse(Individual individual) {
                 if (capturedPhoto == null) {
-                    getActivity().setResult(DirectoryListingFragment.REQUEST_REFRESH);
-                    getActivity().finish();
-
                     AppManager.shared.dismissProgressDialog();
+
+                    finishAndRefreshListing();
                     return;
                 }
 
@@ -144,32 +129,26 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
 
                 AppManager.shared.showprogressDialog(getContext(), "Individual", "Uploading photo...");
 
-                AppManager.shared.webService.uploadFile(individual.getId(), Base64.encodeToString(byteArray, Base64.DEFAULT)).enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        Log.d(WebService.class.toString(), "Saving photo response:" + response.toString());
+                AppManager.shared.webService.uploadFile(individual.getId(), Base64.encodeToString(byteArray, Base64.DEFAULT), new WebService.BasicSuccessFailureInterface() {
+                            @Override
+                            public void onSuccess() {
+                                AppManager.shared.dismissProgressDialog();
 
-                        AppManager.shared.dismissProgressDialog();
+                                finishAndRefreshListing();
+                            }
 
-                        getActivity().setResult(DirectoryListingFragment.REQUEST_REFRESH);
-                        getActivity().finish();
-                    }
+                            @Override
+                            public void onFailure() {
 
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                        Log.d(WebService.class.toString(), "Failed to save photo.");
-
-                        AppManager.shared.dismissProgressDialog();
-                    }
-                });
+                                AppManager.shared.dismissProgressDialog();
+                            }
+                        }
+                );
 
             }
 
             @Override
-            public void onFailure(Call<Directory> call, Throwable t) {
-                Log.d(WebService.class.toString(), "Failed to save individual.");
-
+            public void onFailure() {
                 AppManager.shared.dismissProgressDialog();
             }
         };
@@ -186,15 +165,13 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
                 if (individual.getId().isEmpty()) {
                     AppManager.shared.showprogressDialog(getContext(), "Individual", "Creating...");
 
-                    Log.d(WebService.class.toString(), "Creating Individual");
 
-                    AppManager.shared.webService.createIndividual(individual).enqueue(responseCallback);
+                    AppManager.shared.webService.createIndividual(individual, individualInterface);
                 } else {
                     AppManager.shared.showprogressDialog(getContext(), "Individual", "Saving...");
 
-                    Log.d(WebService.class.toString(), "Modifying Individual: " + individual.id);
 
-                    AppManager.shared.webService.modifyIndividual(individual.id, individual).enqueue(responseCallback);
+                    AppManager.shared.webService.modifyIndividual(individual.id, individual, individualInterface);
                 }
             }
         });
@@ -276,6 +253,11 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
             photoToDelete = BitmapFactory.decodeFile(file.getPath());
             assert(photoToDelete == null);
         }
+    }
+
+    private void finishAndRefreshListing() {
+        getActivity().setResult(DirectoryListingFragment.REQUEST_REFRESH, null);
+        getActivity().finish();
     }
 
 }
