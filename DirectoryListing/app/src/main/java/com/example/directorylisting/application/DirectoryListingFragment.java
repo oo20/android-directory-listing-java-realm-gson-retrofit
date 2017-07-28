@@ -38,6 +38,62 @@ public class DirectoryListingFragment extends android.support.v4.app.Fragment {
     View directoryListingFragment = null;
     ListView directoryListingListView = null;
 
+    interface DirectoryListingActionInterface {
+        void refreshIndividuals();
+        void addIndividual();
+        void loadIndividual(Individual temp);
+    };
+
+    DirectoryListingActionInterface actionInterface = new DirectoryListingActionInterface() {
+        @Override
+        public void refreshIndividuals() {
+            final Boolean forceRefresh = AppManager.shared.directoryListingRefreshNeeded;
+
+            AppManager.shared.directoryListingRefreshNeeded = false;
+
+            WebService.IndividualsInterface individualsInterface = new WebService.IndividualsInterface() {
+                @Override
+                public void onResponse(List<Individual> individuals) {
+
+                    final IndividualListAdapter updatedAdapter = new IndividualListAdapter(directoryListingFragment.getContext(),
+                            R.layout.layout_directory_listing_item, individuals);
+
+                    updatedAdapter.actionInterface = actionInterface;
+
+                    directoryListingListView.setAdapter(updatedAdapter);
+
+                    directoryListingListView.refreshDrawableState();
+
+                }
+
+                @Override
+                public void onFailure() {
+
+                }
+            };
+
+            if (forceRefresh) {
+                AppManager.shared.webService.getIndividuals(individualsInterface);
+            } else {
+                AppManager.shared.webService.fetchIndividuals(individualsInterface);
+            }
+        }
+
+        @Override
+        public void addIndividual() {
+            Individual temp = (new Individual()).clear();
+            loadIndividual(temp);
+        }
+
+        @Override
+        public void loadIndividual(Individual temp) {
+            Intent intent = new Intent(getContext(), IndividualDetailActivity.class);
+            intent.putExtra("individual", (new Gson()).toJson(temp));
+            startActivityForResult(intent, REQUEST_REFRESH);
+        }
+
+    };
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -50,7 +106,7 @@ public class DirectoryListingFragment extends android.support.v4.app.Fragment {
         AppManager manager = AppManager.shared;
         AppManager.shared.init();
 
-        refreshIndividuals();
+        actionInterface.refreshIndividuals();
 
         return directoryListingFragment;
     }
@@ -62,60 +118,9 @@ public class DirectoryListingFragment extends android.support.v4.app.Fragment {
         if (resultCode == REQUEST_REFRESH) {
             AppManager.shared.directoryListingRefreshNeeded = true;
 
-            refreshIndividuals();
+            actionInterface.refreshIndividuals();
         }
     }
 
-    public void refreshIndividuals() {
-        final Boolean forceRefresh = AppManager.shared.directoryListingRefreshNeeded;
 
-        AppManager.shared.directoryListingRefreshNeeded = false;
-
-        WebService.IndividualsInterface individualsInterface = new WebService.IndividualsInterface() {
-            @Override
-            public void onResponse(List<Individual> individuals) {
-
-                final IndividualListAdapter updatedAdapter = new IndividualListAdapter(directoryListingFragment.getContext(),
-                        R.layout.layout_directory_listing_item, individuals);
-
-                directoryListingListView.setAdapter(updatedAdapter);
-
-                directoryListingListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Individual item = updatedAdapter.items.get(position);
-
-                        Log.d(WebService.class.toString(), "Selected: " + item.getId());
-
-                        loadIndividual(item);
-                    }
-                });
-
-                directoryListingListView.refreshDrawableState();
-
-            }
-
-            @Override
-            public void onFailure() {
-
-            }
-        };
-
-        if (forceRefresh) {
-            AppManager.shared.webService.getIndividuals(individualsInterface);
-        } else {
-            AppManager.shared.webService.fetchIndividuals(individualsInterface);
-        }
-    }
-
-    public void addIndividual() {
-        Individual temp = (new Individual()).clear();
-        loadIndividual(temp);
-    }
-
-    private void loadIndividual(Individual temp) {
-        Intent intent = new Intent(getContext(), IndividualDetailActivity.class);
-        intent.putExtra("individual", (new Gson()).toJson(temp));
-        startActivityForResult(intent, REQUEST_REFRESH);
-    }
 }

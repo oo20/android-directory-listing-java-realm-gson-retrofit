@@ -197,7 +197,7 @@ public class WebService {
         saveIndividual(individual, individualInterface);
     }
 
-    private void deleteIndividual(String id, final BasicSuccessFailureInterface deleteIndividualInterface) {
+    public void deleteIndividual(String id, final BasicSuccessFailureInterface deleteIndividualInterface) {
         webServiceInterface.deleteIndividual(id).enqueue(new Callback<Directory>() {
             @Override
             public void onResponse(Call<Directory> call, Response<Directory> response) {

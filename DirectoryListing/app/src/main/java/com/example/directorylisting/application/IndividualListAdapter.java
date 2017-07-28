@@ -3,14 +3,20 @@ package com.example.directorylisting.application;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.BoolRes;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -21,6 +27,9 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.example.directorylisting.api.WebService;
+import com.example.directorylisting.entities.Directory;
 import com.example.directorylisting.entities.Individual;
 
 import java.util.ArrayList;
@@ -40,11 +49,16 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
 
     static class ViewHolder {
         ImageView imageView;
+        Button deleteButton;
+        FrameLayout frameLayout;
+        SwipeRevealLayout swipeRevealLayout;
     }
 
     List<Individual> items = new ArrayList<Individual>();
 
     int dpImage = (int) this.getContext().getResources().getDimension(R.dimen.directory_listing_image_size);
+
+    DirectoryListingFragment.DirectoryListingActionInterface actionInterface = null;
 
     public IndividualListAdapter(Context context, int textViewResourceId,
                               List<Individual> objects) {
@@ -53,11 +67,11 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
 
-        Individual item = getItem(position);
+        final Individual item = getItem(position);
 
-        ViewHolder holder;
+        final ViewHolder holder;
 
         //if (convertView == null) { // TODO: Fix recycler with glide.
 
@@ -67,6 +81,12 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
             holder = new ViewHolder();
 
             holder.imageView = (ImageView) convertView.findViewById(R.id.profile_image);
+
+            holder.deleteButton = (Button) convertView.findViewById(R.id.delete_button);
+
+            holder.frameLayout = (FrameLayout) convertView.findViewById(R.id.directory_listing_list_item);
+
+            holder.swipeRevealLayout = (SwipeRevealLayout) convertView.findViewById(R.id.directory_listing_swipe_layout);
 
             convertView.setTag(holder);
         /*} else {
@@ -79,7 +99,6 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
                 .clear(holder.imageView);
 
         holder.imageView.setImageDrawable(null);
-
 
         if (item.profilePicture.isEmpty()) {
             holder.imageView.setImageResource(R.drawable.missing);
@@ -120,6 +139,43 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
         } catch (Exception e) {
             Log.d(IndividualListAdapter.class.toString(), "Error: " + e.toString());
         }
+
+        holder.frameLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Individual item = items.get(position);
+
+                Log.d(WebService.class.toString(), "Selected: " + item.getId());
+
+                actionInterface.loadIndividual(item);
+
+            }
+        });
+
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppManager.shared.showprogressDialog(getContext(), "Individual", "Deleting..");
+
+                AppManager.shared.webService.deleteIndividual(item.id, new WebService.BasicSuccessFailureInterface() {
+                    @Override
+                    public void onSuccess() {
+                        AppManager.shared.dismissProgressDialog();
+
+                        AppManager.shared.directoryListingRefreshNeeded = true;
+                        actionInterface.refreshIndividuals();
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        AppManager.shared.dismissProgressDialog();
+
+                    }
+                });
+
+            }
+        });
 
         return convertView;
     }

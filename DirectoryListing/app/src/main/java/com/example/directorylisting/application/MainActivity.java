@@ -49,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_individual:
-                directoryListingFragment.addIndividual();
+                directoryListingFragment.actionInterface.addIndividual();
                 return true;
             case R.id.action_refresh:
                 AppManager.shared.directoryListingRefreshNeeded = true;
-                directoryListingFragment.refreshIndividuals();
+                directoryListingFragment.actionInterface.refreshIndividuals();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

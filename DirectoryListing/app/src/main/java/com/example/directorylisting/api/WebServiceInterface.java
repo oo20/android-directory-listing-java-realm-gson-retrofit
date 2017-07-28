@@ -10,6 +10,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Multipart;
@@ -41,7 +42,7 @@ public interface WebServiceInterface {
             @Body String individual
     );
 
-    @GET("individual/delete/{id}")
+    @DELETE("individual/delete/{id}")
     Call<Directory> deleteIndividual(@Path("id") String id);
 
     @Multipart

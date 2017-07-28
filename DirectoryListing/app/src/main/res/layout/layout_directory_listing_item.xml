@@ -6,21 +6,53 @@
     android:layout_weight="1"
     android:orientation="vertical">
 
-    <com.pkmmte.view.CircularImageView
-        android:id="@+id/profile_image"
-        android:layout_width="@dimen/directory_listing_image_size"
-        android:layout_height="@dimen/directory_listing_image_size"
-        android:layout_gravity="center"
-        app:border="false"
-        app:border_color="#EEEEEE"
-        app:border_width="3dp"
-        app:shadow="true"
-        />
-
-    <Space
+    <com.chauthai.swipereveallayout.SwipeRevealLayout
+        android:id="@+id/directory_listing_swipe_layout"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_weight="100"
-        />
+        android:layout_height="wrap_content"
+        app:mode="same_level"
+        app:dragEdge="right"
+        android:layout_marginTop="@dimen/individual_detail_image_padding"
+        >
+
+        <!-- Menu layout of listview item -->
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/delete_button"
+                android:layout_width="@dimen/directory_listing_button_size_width"
+                android:layout_height="@dimen/directory_listing_image_size"
+                android:layout_marginEnd="@dimen/individual_detail_image_padding"
+                android:layout_marginRight="@dimen/individual_detail_image_padding"
+                android:background="@color/colorWarning"
+                android:textColor="@color/colorWhite"
+                android:textAllCaps="false"
+                android:text="Delete"
+                />
+
+        </FrameLayout>
+
+        <!-- Primary layout of listview item -->
+        <FrameLayout
+            android:id="@+id/directory_listing_list_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.pkmmte.view.CircularImageView
+                android:id="@+id/profile_image"
+                android:layout_width="@dimen/directory_listing_image_size"
+                android:layout_height="@dimen/directory_listing_image_size"
+                android:layout_gravity="center"
+                app:border="false"
+                app:border_color="#EEEEEE"
+                app:border_width="3dp"
+                app:shadow="true"
+                />
+
+        </FrameLayout>
+
+    </com.chauthai.swipereveallayout.SwipeRevealLayout>
 
 </LinearLayout>
