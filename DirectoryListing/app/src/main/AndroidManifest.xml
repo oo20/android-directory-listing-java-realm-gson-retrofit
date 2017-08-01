@@ -24,6 +24,7 @@
         <activity android:name="com.example.directorylisting.application.IndividualDetailActivity"
             android:label="Individual Detail"
             android:screenOrientation="portrait"
+            android:parentActivityName="com.example.directorylisting.application.MainActivity"
             />
 
     </application>

@@ -1,5 +1,6 @@
 package com.example.directorylisting.entities;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import com.example.directorylisting.application.R;

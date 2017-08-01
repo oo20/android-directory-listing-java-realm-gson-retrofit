@@ -124,6 +124,7 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 imageView.buildDrawingCache();
                 Bitmap bitmap = capturedPhoto != null ? capturedPhoto : imageView.getDrawingCache();
+                imageView.destroyDrawingCache();
                 bitmap.compress(Bitmap.CompressFormat.PNG, AppManager.shared.imageCompressionPercentage, byteArrayOutputStream);
                 byte[] byteArray = byteArrayOutputStream.toByteArray();
 
@@ -255,7 +256,19 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
         }
     }
 
-    private void finishAndRefreshListing() {
+    public void finishAndRefreshListing() {
+        Glide.with(getContext())
+                .clear(imageView);
+        imageView.setImageDrawable(null);
+        imageView = null;
+
+        individual = null;
+
+        folder = null;
+
+        file = null;
+
+        capturedPhoto = null;
         getActivity().setResult(DirectoryListingFragment.REQUEST_REFRESH, null);
         getActivity().finish();
     }
