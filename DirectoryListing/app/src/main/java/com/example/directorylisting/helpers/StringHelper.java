@@ -2,8 +2,15 @@ package com.example.directorylisting.helpers;
 
 import android.net.Uri;
 
-import com.example.directorylisting.application.R;
 import com.example.directorylisting.shared.AppManager;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * Created by Michael Steele on 7/19/17.
@@ -29,6 +36,23 @@ public class StringHelper {
         }
 
         return output;
+    }
+
+    public static String streamToText(InputStream inputStream) throws IOException {
+        if (inputStream == null) {
+            return "";
+        }
+
+        Writer writer = new StringWriter();
+
+        char[] buffer = new char[1024];
+
+        Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        int count = 0;
+        while ((count = reader.read(buffer)) != -1) {
+            writer.write(buffer, 0, count);
+        }
+        return writer.toString();
     }
 
     public static String getResourcePath(int resource) {

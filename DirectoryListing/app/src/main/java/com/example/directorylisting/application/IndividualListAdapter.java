@@ -11,18 +11,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ListView;
 
-import com.bumptech.glide.Glide;
 import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.example.directorylisting.api.WebService;
 import com.example.directorylisting.entities.ImageEngine;
 import com.example.directorylisting.entities.Individual;
+import com.example.directorylisting.shared.AppManager;
+import com.pkmmte.view.CircularImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import com.example.directorylisting.shared.AppManager;
 
 /**
  * Created by Michael Steele on 7/13/17.
@@ -40,6 +40,7 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
 
     List<Individual> items = new ArrayList<Individual>();
     HashMap<Integer,ImageEngine> imageEngines = new HashMap<Integer,ImageEngine>();
+    ListView listView = null;
 
 
     int dpImage = (int) this.getContext().getResources().getDimension(R.dimen.directory_listing_image_size);
@@ -81,10 +82,14 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
 
 
 
+        /*
+        //Glide 4
         Glide.with(holder.imageView.getContext())
                 .clear(holder.imageView);
+        */
 
         holder.imageView.setImageDrawable(null);
+        holder.imageView.setTag(item.getId());
 
         if (item.profilePicture.isEmpty()) {
 
@@ -104,13 +109,49 @@ public class IndividualListAdapter extends ArrayAdapter<Individual> {
                 imageEngines.put(position, new ImageEngine());
             }
 
+            ImageEngine imageEngine = imageEngines.get(position);
+
             imageEngines.get(position).loadImage(getContext(), item.id, AppManager.shared.getCacheKey(item), item.getPrettyProfilePicture(), dpImage, new ImageEngine.ImageEngineInterface() {
                 @Override
-                public void finished(String id, Drawable resource) {
+                public void finished(String id, final Drawable resource) {
                     if (item.id.equals(id)) {
                         anim.end();
-                        holder.imageView.setImageDrawable(resource);
 
+
+                        ((MainActivity)getContext()).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                //holder.imageView.setImageBitmap(null);
+                                //holder.imageView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.missing, getContext().getTheme()));
+                                CircularImageView circle = (CircularImageView)holder.imageView;
+                                //circle.setImageDrawable(getContext().getResources().getDrawable(R.drawable.missing, getContext().getTheme()));
+                                /*circle.setImageDrawable(resource);
+                                circle.getRootView().invalidate();
+                                circle.getRootView().refreshDrawableState();*/
+
+                                circle.setImageDrawable(resource);
+
+                                //notifyDataSetChanged();
+
+
+                                /*if (position >= listView.getFirstVisiblePosition()
+                                        && position <= listView.getLastVisiblePosition()) {
+
+                                    listView.invalidateViews();
+
+                                }*/
+
+                                /*holder.imageView.invalidate();
+                                holder.imageView.postInvalidate();
+                                holder.imageView.refreshDrawableState();
+                                holder.imageView.setImageDrawable(resource);
+                                holder.imageView.invalidate();
+                                holder.imageView.postInvalidate();
+                                holder.imageView.refreshDrawableState();*/
+
+                            }
+                        });
                     }
                 }
             });

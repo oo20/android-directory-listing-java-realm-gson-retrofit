@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.directorylisting.application">
 
     <application
@@ -26,6 +27,12 @@
             android:screenOrientation="portrait"
             android:parentActivityName="com.example.directorylisting.application.MainActivity"
             />
+
+        <meta-data
+            android:name="com.example.directorylisting.auth.OkHttpGlideModule"
+            android:value="GlideModule" />
+
+        <meta-data android:name="com.bumptech.glide.module.GlideModule" tools:node="remove" />
 
     </application>
 

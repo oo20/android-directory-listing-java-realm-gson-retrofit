@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
 
         Realm.init(getApplicationContext());
 
-
         AppManager.shared.packageName = getApplicationContext().getPackageName();
 
         setContentView(R.layout.activity_main);

@@ -36,19 +36,26 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-scalars:2.0.0'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
 
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.8.1'
 
-    compile 'com.squareup.okhttp3:okhttp:3.6.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-
-    //compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.pkmmte.view:circularimageview:1.1'
 
-    //compile 'com.squareup.picasso:picasso:2.5.2'
-
-    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
+    /*
+    // Glide 4
+    compile 'com.github.bumptech.glide:glide:4.0.0'
     compile 'com.android.support:support-v4:25.3.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
+    compile 'com.github.bumptech.glide:okhttp3-integration:1.5.0@aar'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'*/
+
+    compile 'com.github.bumptech.glide:glide:3.8.0'
+    compile 'com.android.support:support-v4:19.1.0'
+    // Remember to remove @aar from the end of the glide okhttp3-integration to all for custom GlideModule
+    compile 'com.github.bumptech.glide:okhttp3-integration:1.5.0'
+
 
     compile 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.0'
+
+    compile 'com.burgstaller:okhttp-digest:1.15'
 
 }

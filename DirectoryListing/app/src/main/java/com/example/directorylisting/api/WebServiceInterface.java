@@ -1,12 +1,9 @@
 package com.example.directorylisting.api;
 
 import com.example.directorylisting.entities.Directory;
-import com.example.directorylisting.entities.Individual;
-import com.example.directorylisting.shared.AppManager;
-import com.google.gson.Gson;
+import com.example.directorylisting.entities.Status;
 
 import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -18,6 +15,7 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Url;
 
 /**
  * Created by Michael Steele on 3/22/17.
@@ -53,5 +51,10 @@ public interface WebServiceInterface {
             //@Part("description") RequestBody description,
             @Part MultipartBody.Part tempFile);
 
+    @GET
+    Call<ResponseBody> downloadFile(@Url String fileUrl);
+
+    @GET("status/")
+    Call<Status> getStatus();
 }
 

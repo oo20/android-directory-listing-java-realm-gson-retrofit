@@ -1,7 +1,6 @@
 package com.example.directorylisting.application;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,39 +14,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.signature.ObjectKey;
 import com.example.directorylisting.api.WebService;
-import com.example.directorylisting.entities.Directory;
 import com.example.directorylisting.entities.Individual;
-import com.example.directorylisting.helpers.StringHelper;
 import com.example.directorylisting.shared.AppManager;
-import com.google.gson.Gson;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
-import io.realm.annotations.PrimaryKey;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static android.R.attr.bitmap;
 import static com.bumptech.glide.load.resource.bitmap.TransformationUtils.rotateImage;
-import static com.example.directorylisting.application.R.drawable.missing;
 
 /**
  * Created by Michael Steele on 3/13/17.
@@ -96,6 +76,18 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
 
         try {
 
+            // Glide 3
+            Glide.with(getContext())
+                    .load(individual.getPrettyProfilePicture())
+                    .placeholder(R.drawable.missing)
+                    .override(dpImage, dpImage)
+                    .centerCrop()
+                    .signature(AppManager.shared.getCacheKey(individual))
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .into(imageView);
+
+            /*
+            // Glide 4
             Glide.with(getContext())
                     .load(individual.getPrettyProfilePicture())
                     .apply(RequestOptions.placeholderOf(R.drawable.missing))
@@ -103,6 +95,7 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
                     .apply(RequestOptions.signatureOf(AppManager.shared.getCacheKey(individual)))
                     .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.AUTOMATIC))
                     .into(imageView);
+            */
 
         } catch (Exception e) {
             Log.d(IndividualListAdapter.class.toString(), "Error: " + e.toString());
@@ -202,8 +195,10 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
 
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
 
+            /*
+            // Glide 4
             Glide.with(getContext())
-                    .clear(imageView);
+                    .clear(imageView);*/
 
             // Load cached image.
             Bitmap photoToDelete = BitmapFactory.decodeFile(file.getPath());
@@ -257,8 +252,11 @@ public class IndividualDetailFragment extends android.support.v4.app.Fragment {
     }
 
     public void finishAndRefreshListing() {
+        /*
+        //Glide 4
         Glide.with(getContext())
-                .clear(imageView);
+            .clear(imageView);
+        */
         imageView.setImageDrawable(null);
         imageView = null;
 

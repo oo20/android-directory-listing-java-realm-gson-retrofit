@@ -1,6 +1,5 @@
 package com.example.directorylisting.application;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,23 +7,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.directorylisting.api.WebService;
-import com.example.directorylisting.api.WebServiceInterface;
-import com.example.directorylisting.entities.Directory;
 import com.example.directorylisting.entities.Individual;
 import com.example.directorylisting.shared.AppManager;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.Realm;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Michael Steele on 3/13/17.
@@ -60,15 +50,22 @@ public class DirectoryListingFragment extends android.support.v4.app.Fragment {
 
                     updatedAdapter.actionInterface = actionInterface;
 
-                    directoryListingListView.setAdapter(updatedAdapter);
+                    updatedAdapter.listView = directoryListingListView;
 
-                    directoryListingListView.refreshDrawableState();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            directoryListingListView.setAdapter(updatedAdapter);
+
+                            directoryListingListView.refreshDrawableState();
+                        }
+                    });
 
                 }
 
                 @Override
                 public void onFailure() {
-
+                    Log.d(DirectoryListingFragment.class.toString(), "Failed to initialize service.");
                 }
             };
 
@@ -104,9 +101,26 @@ public class DirectoryListingFragment extends android.support.v4.app.Fragment {
         directoryListingListView = (ListView) directoryListingFragment.findViewById(R.id.directory_listing_listview);
 
         AppManager manager = AppManager.shared;
-        AppManager.shared.init();
 
-        actionInterface.refreshIndividuals();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AppManager.shared.init(getContext(), new WebService.BasicSuccessFailureInterface() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(DirectoryListingFragment.class.toString(), "Success initializing.  Refreshing individuals list.");
+
+                        actionInterface.refreshIndividuals();
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Log.d(DirectoryListingFragment.class.toString(), "Failed initilization.  Make sure server is running and configured correctly.");
+                    }
+                });
+            }
+        });
+        t.start();
 
         return directoryListingFragment;
     }
