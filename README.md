@@ -1,11 +1,12 @@
 # ios-directory-listing-swift-realm-objectmapper-alamofire
 
 Created by Michael Steele on 3/13/17.<br />
-Copyright © 2017 Michael Steele.<br />
+Copyright © 2017, 2018 Michael Steele.<br />
 All rights reserved.<br />
 
-DEVELOPMENT IN PROGRESS - Example Android App source code for a Directory Listing using Kotlin, Realm, Retrofit2, Glide, SSL, Auth Digest and more.  See Gradle file DirectoryListing/app/build.gradle for more libaries.  The example images are large and will be resized and cached on disk and in memory as needed.  In the future, the individuals wlll be stored in the Realm database for retrieval as you run the app.  You can create and modify individuals temporarily on a server.  Note: Both Kotlin
-and Java versions are available (check branches).
+DEVELOPMENT IN PROGRESS - Example Android App source code for a Directory Listing using Kotlin (Java branch also available), Realm, Retrofit2, Glide, SSL, Auth Digest and more.  See Gradle file DirectoryListing/app/build.gradle for more libaries.  The example images are large and will be resized and cached on disk and in memory as needed.  In the future, the individuals wlll be stored in the Realm database for retrieval as you run the app.  You can create and modify individuals temporarily on a server.
+
+Note: Both Kotlin and Java versions are available (check branches).<br />
 
 <pre>
 Instructions:

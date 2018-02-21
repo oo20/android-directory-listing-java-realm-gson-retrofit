@@ -35,7 +35,6 @@ class ImageEngine {
             // Glide 3
             Glide.with(context)
                     .load(GlideUrl(url))
-                    //.load(url)
                     .placeholder(R.drawable.spinner)
                     .override(tempSize, size)
                     .signature(key)

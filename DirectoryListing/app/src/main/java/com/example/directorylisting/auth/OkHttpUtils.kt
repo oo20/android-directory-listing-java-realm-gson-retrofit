@@ -29,7 +29,7 @@ object OkHttpUtils {
                 }
 
                 override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> {
-                    return arrayOf(SSLUtils.getX509Certificate(context, WebService.getCert(context))) //AppManager.shared.webService
+                    return arrayOf(SSLUtils.getX509Certificate(context, WebService.getCert(context)))
                 }
             })
 

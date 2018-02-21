@@ -108,33 +108,8 @@ class IndividualListAdapter(context: Context, textViewResourceId: Int,
 
 
                         (context as MainActivity).runOnUiThread {
-                            //holder.imageView.setImageBitmap(null);
-                            //holder.imageView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.missing, getContext().getTheme()));
                             val circle = holder.imageView as CircularImageView?
-                            //circle.setImageDrawable(getContext().getResources().getDrawable(R.drawable.missing, getContext().getTheme()));
-                            /*circle.setImageDrawable(resource);
-                                circle.getRootView().invalidate();
-                                circle.getRootView().refreshDrawableState();*/
-
                             circle?.setImageDrawable(resource)
-
-                            //notifyDataSetChanged();
-
-
-                            /*if (position >= listView.getFirstVisiblePosition()
-                                        && position <= listView.getLastVisiblePosition()) {
-
-                                    listView.invalidateViews();
-
-                                }*/
-
-                            /*holder.imageView.invalidate();
-                                holder.imageView.postInvalidate();
-                                holder.imageView.refreshDrawableState();
-                                holder.imageView.setImageDrawable(resource);
-                                holder.imageView.invalidate();
-                                holder.imageView.postInvalidate();
-                                holder.imageView.refreshDrawableState();*/
                         }
                     }
                 }

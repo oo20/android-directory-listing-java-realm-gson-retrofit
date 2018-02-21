@@ -17,7 +17,7 @@ class AppManager : Any() {
 
     var webService: WebService = WebService()
 
-    var hostname = "localhost"
+    var hostname = "192.168.5.201"
     var allowInvalidCert = true
     var appUser = "test" // TODO: Add login interface when auth is required (only if server prompts).
     var appPassword = "test" // TODO: Add login interface when auth is required (only if server prompts).

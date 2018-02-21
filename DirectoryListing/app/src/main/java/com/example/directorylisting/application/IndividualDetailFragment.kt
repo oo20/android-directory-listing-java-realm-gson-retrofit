@@ -43,8 +43,6 @@ class IndividualDetailFragment : android.support.v4.app.Fragment() {
     internal var capturedPhoto: Bitmap? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        //return super.onCreateView(inflater, container, savedInstanceState);
-
         return inflater?.inflate(R.layout.fragment_individual_detail, container, false)
     }
 
@@ -185,7 +183,6 @@ class IndividualDetailFragment : android.support.v4.app.Fragment() {
 
             // Load cached image.
             var photoToDelete: Bitmap? = BitmapFactory.decodeFile(file?.path)
-// Assert to make sure it exists.
 
             // Since the image is stored in the cache directory and not sent through intent data, we need to get the orientation from the Exif data from the loaded file.
             try {

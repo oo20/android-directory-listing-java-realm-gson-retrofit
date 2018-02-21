@@ -48,8 +48,6 @@ class DirectoryListingFragment : android.support.v4.app.Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        //return super.onCreateView(inflater, container, savedInstanceState);
-
         directoryListingFragment = inflater?.inflate(R.layout.fragment_directory_listing, container, false)
 
         directoryListingListView = directoryListingFragment?.findViewById<View>(R.id.directory_listing_listview) as ListView
