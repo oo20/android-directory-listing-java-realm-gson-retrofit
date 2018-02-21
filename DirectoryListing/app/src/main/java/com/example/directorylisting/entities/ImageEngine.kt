@@ -3,60 +3,60 @@
  * All rights reserved.
  */
 
-package com.example.directorylisting.entities;
+package com.example.directorylisting.entities
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.util.Log
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.Key;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.model.GlideUrl;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
-import com.example.directorylisting.application.R;
+import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.Key
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.resource.drawable.GlideDrawable
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.example.directorylisting.application.R
 
 
-public class ImageEngine {
+class ImageEngine {
 
-    public interface ImageEngineInterface {
-        void finished(String id, Drawable resource);
-    };
+    interface ImageEngineInterface {
+        fun finished(id: String, resource: Drawable)
+    }
 
-    public void loadImage(final Context context, final String tag, final Key key, final String url, final Integer size, final ImageEngineInterface imageEngineInterface) {
+    fun loadImage(context: Context, tag: String, key: Key, url: String, size: Int?, imageEngineInterface: ImageEngineInterface) {
 
         try {
 
+            var tempSize = size?: return
+
             // Glide 3
             Glide.with(context)
-                    .load(new GlideUrl(url))
+                    .load(GlideUrl(url))
                     //.load(url)
                     .placeholder(R.drawable.spinner)
-                    .override(size, size)
+                    .override(tempSize, size)
                     .signature(key)
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .priority(Priority.HIGH)
                     .centerCrop()
-                    .listener(new RequestListener<GlideUrl, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, GlideUrl model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            Log.d(ImageEngine.class.toString(), "Glide Error: " + e.toString());
-                            return false;
+                    .listener(object : RequestListener<GlideUrl, GlideDrawable> {
+                        override fun onException(e: Exception, model: GlideUrl, target: Target<GlideDrawable>, isFirstResource: Boolean): Boolean {
+                            Log.d(ImageEngine::class.java.toString(), "Glide Error: " + e.toString())
+                            return false
                         }
 
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, GlideUrl model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            imageEngineInterface.finished(tag, resource);
-                            return false;
+                        override fun onResourceReady(resource: GlideDrawable, model: GlideUrl, target: Target<GlideDrawable>, isFromMemoryCache: Boolean, isFirstResource: Boolean): Boolean {
+                            imageEngineInterface.finished(tag, resource)
+                            return false
                         }
                     })
-                    .preload();
+                    .preload()
 
-        } catch (Exception e) {
-            Log.d(ImageEngine.class.toString(), "Error: " + e.toString());
+        } catch (e: Exception) {
+            Log.d(ImageEngine::class.java.toString(), "Error: " + e.toString())
         }
 
         /*

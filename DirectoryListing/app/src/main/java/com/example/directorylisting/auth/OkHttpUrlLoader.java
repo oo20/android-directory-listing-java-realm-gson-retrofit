@@ -20,6 +20,7 @@ import java.io.InputStream;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 
+// kotlin issues have duplicate signatures with internalClient (keep in java for now)
 public class OkHttpUrlLoader implements StreamModelLoader<GlideUrl> {
 
     private final Call.Factory client;

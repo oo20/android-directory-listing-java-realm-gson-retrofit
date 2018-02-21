@@ -1,8 +1,9 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "com.example.directorylisting.myapplication"
         minSdkVersion 16
@@ -57,5 +58,8 @@ dependencies {
     compile 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.0'
 
     compile 'com.burgstaller:okhttp-digest:1.15'
-
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }
